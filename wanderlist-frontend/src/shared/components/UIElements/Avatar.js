@@ -1,8 +1,9 @@
-import React from 'react';
+import React from "react";
 
-import './Avatar.css';
+import "./Avatar.css";
 
-const Avatar = props => {
+const Avatar = (props) => {
+  console.log(props.width);
   return (
     <div className={`avatar ${props.className}`} style={props.style}>
       <img
