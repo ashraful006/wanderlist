@@ -3,28 +3,28 @@ import React, { useReducer, useEffect } from "react";
 import "./Input.css";
 import { validate } from "../../util/validators";
 
-export const Input = (props) => {
-  const inputReducer = (state, action) => {
-    switch (action.type) {
-      case "CHANGE":
-        return {
-          ...state,
-          value: action.val,
-          isValid: validate(action.val, action.validators),
-        };
-      case "TOUCH":
-        return {
-          ...state,
-          isTouched: true,
-        };
-      default:
-        return state;
-    }
-  };
+const inputReducer = (state, action) => {
+  switch (action.type) {
+    case "CHANGE":
+      return {
+        ...state,
+        value: action.val,
+        isValid: validate(action.val, action.validators),
+      };
+    case "TOUCH":
+      return {
+        ...state,
+        isTouched: true,
+      };
+    default:
+      return state;
+  }
+};
 
+export const Input = (props) => {
   const [inputState, dispatch] = useReducer(inputReducer, {
-    value: "",
-    isValid: false,
+    value: props.initialValue || "",
+    isValid: props.initialValid || false,
     isTouched: false,
   });
 
