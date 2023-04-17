@@ -7,7 +7,7 @@ import {
   VALIDATOR_REQUIRE,
 } from "../../shared/util/validators";
 import Button from "../../shared/components/FormElements/Button";
-import { useForm } from "../../hooks/form-hook";
+import { useForm } from "../../shared/hooks/form-hook";
 
 const NewPlace = () => {
   const [formState, inputHandler] = useForm(
