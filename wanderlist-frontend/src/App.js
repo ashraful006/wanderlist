@@ -11,6 +11,7 @@ import Users from "./user/pages/Users";
 import NewPlace from "./places/pages/NewPlace";
 import UserPlaces from "./places/pages/UserPlaces";
 import UpdatePlace from "./places/pages/UpdatePlace";
+import Auth from "./user/pages/Auth";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
           <Route path="/:userId/place" exact element={<UserPlaces />} />
           <Route path="/places/new" exact element={<NewPlace />} />
           <Route path="/places/:placeId" exact element={<UpdatePlace />} />
+          <Route path="/auth" exact element={<Auth />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
