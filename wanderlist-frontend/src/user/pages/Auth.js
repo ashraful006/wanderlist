@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
 import Card from "../../shared/components/UIElements/Card";
 import { Input } from "../../shared/components/FormElements/Input";
@@ -9,9 +9,11 @@ import {
 } from "../../shared/util/validators";
 import { useForm } from "../../shared/hooks/form-hook";
 import Button from "../../shared/components/FormElements/Button";
+import { AuthContext } from "../../shared/context/auth-context";
 import "./Auth.css";
 
 const Auth = () => {
+  const auth = useContext(AuthContext);
   const [formState, inputHandler, setFormData] = useForm(
     {
       email: {
@@ -55,6 +57,7 @@ const Auth = () => {
   const submitHandler = (event) => {
     event.preventDefault();
     console.log(formState.inputs);
+    auth.logIn();
   };
   return (
     <Card className="authentication">
