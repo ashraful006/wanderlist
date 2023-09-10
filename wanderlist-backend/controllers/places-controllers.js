@@ -80,7 +80,7 @@ const createPlace = async (req, res, next) => {
   res.status(201).json({ place: newPlace });
 };
 
-const updatePlace = (req, res, next) => {
+const updatePlace = async (req, res, next) => {
   const error = validationResult(req);
 
   if (!error.isEmpty()) {
@@ -89,15 +89,33 @@ const updatePlace = (req, res, next) => {
 
   const { title, description } = req.body;
 
-  const updatedPlace = {
-    ...DUMMY_PLACES.find((place) => place.id === req.params.pid),
-  };
-  const index = DUMMY_PLACES.findIndex((place) => place.id === req.params.pid);
-  updatedPlace.title = title;
-  updatedPlace.description = description;
-  DUMMY_PLACES[index] = updatedPlace;
+  const id = req.params.pid;
+  let place;
 
-  res.status(200).json({ place: updatedPlace });
+  try {
+    place = await Place.findById(id);
+  } catch(err) {
+    error = new HttpError(
+      "Cannot update place",
+      500
+    );
+
+    return next(error);
+  }
+
+  place.title = title;
+  place.description = description;
+
+  try {
+    await place.save();
+  } catch (err) {
+    error = new HttpError(
+      "Cannot update place",
+      500
+    );
+  }
+
+  res.status(200).json({ place: place.toObject({ getters: true }) });
 };
 
 const deletePlace = (req, res, next) => {
