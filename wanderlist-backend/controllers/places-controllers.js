@@ -22,7 +22,7 @@ const getPlacesById = async (req, res, next) => {
     throw new HttpError("Could not find place for the given place id", 404);
   }
 
-  res.json({ place: place.toObject({getters: true}) });
+  res.json({ place: place.toObject({ getters: true }) });
 };
 
 const getPlacesByUserId = async (req, res, next) => {
@@ -30,7 +30,7 @@ const getPlacesByUserId = async (req, res, next) => {
   let places;
 
   try {
-    places = await Place.find({ creator: userId});
+    places = await Place.find({ creator: userId });
   } catch (err) {
     const error = new HttpError(
       'Cannot find place',
@@ -73,7 +73,7 @@ const createPlace = async (req, res, next) => {
       "Cannot create places",
       500
     );
-    
+
     return next(error);
   }
 
@@ -94,8 +94,8 @@ const updatePlace = async (req, res, next) => {
 
   try {
     place = await Place.findById(id);
-  } catch(err) {
-    error = new HttpError(
+  } catch (err) {
+    const error = new HttpError(
       "Cannot update place",
       500
     );
@@ -109,21 +109,43 @@ const updatePlace = async (req, res, next) => {
   try {
     await place.save();
   } catch (err) {
-    error = new HttpError(
+    const error = new HttpError(
       "Cannot update place",
       500
     );
+
+    return next(error);
   }
 
   res.status(200).json({ place: place.toObject({ getters: true }) });
 };
 
-const deletePlace = (req, res, next) => {
-  if (!DUMMY_PLACES.find((place) => (place.id = req.params.pid))) {
-    throw new HttpError("Could not found place to delete", 404);
+const deletePlace = async (req, res, next) => {
+  const id = req.params.pid;
+
+  let place; 
+
+  try {
+    place = await Place.findOne({_id: id});
+  } catch (err) {
+    const error = new HttpError(
+      "Cannot delete place",
+      500
+    );
+
+    return next(error);
   }
 
-  DUMMY_PLACES = DUMMY_PLACES.filter((place) => place.id !== req.params.pid);
+  try {
+    await place.deleteOne();
+  } catch (err) {
+    const error = new HttpError(
+      "Cannot delete the place",
+      500
+    );
+
+    return next(error);
+  }
 
   res.status(200).json({ message: "A place has beed deleted." });
 };
