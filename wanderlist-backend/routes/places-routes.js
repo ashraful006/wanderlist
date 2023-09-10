@@ -22,8 +22,7 @@ router.patch(
   "/:pid",
   [
     check("title").notEmpty(),
-    check("description").isLength({ min: 5 }),
-    check("address").notEmpty(),
+    check("description").isLength({ min: 5 })
   ],
   placesControllers.updatePlace
 );
