@@ -47,15 +47,21 @@ const signup = (req, res, next) => {
   res.status(201).json({ user: newUser });
 };
 
-const login = (req, res, next) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
 
-  const identifiedUser = DUMMY_USERS.find((user) => user.email === email);
+  let user;
 
-  if (!identifiedUser || identifiedUser.password !== password) {
-    return next(new HttpError("Given email and password seems to be wrong!"));
+  try {
+    user = await User.findOne({email: email});
+  } catch (err) {
+    return next(new HttpError('Cannot signin now, please try again later', 500));
   }
 
+  if (!user || user.password !== password) {
+    return next(new HttpError('Wrong email or password', 401));
+  }
+  
   res.json({ message: "Logged in" });
 };
 
