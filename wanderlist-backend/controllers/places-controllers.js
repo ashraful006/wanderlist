@@ -19,7 +19,7 @@ const getPlacesById = async (req, res, next) => {
   }
 
   if (!place) {
-    throw new HttpError("Could not find place for the given place id", 404);
+    return next(new HttpError("Could not find place for the given place id", 404));
   }
 
   res.json({ place: place.toObject({ getters: true }) });
@@ -53,7 +53,7 @@ const createPlace = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    throw new HttpError("Invalid inputs are passed.", 422);
+    return next(new HttpError("Invalid inputs are passed.", 422));
   }
 
   const { title, description, location, address, creator, image } = req.body;
@@ -84,7 +84,7 @@ const updatePlace = async (req, res, next) => {
   const error = validationResult(req);
 
   if (!error.isEmpty()) {
-    throw new HttpError("Invalid inputs passed", 422);
+    return next(new HttpError("Invalid inputs passed", 422));
   }
 
   const { title, description } = req.body;
