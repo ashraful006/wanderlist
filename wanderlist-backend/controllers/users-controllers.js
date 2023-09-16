@@ -13,8 +13,16 @@ const DUMMY_USERS = [
   },
 ];
 
-const getUsers = (req, res, next) => {
-  res.json({ users: DUMMY_USERS });
+const getUsers = async (req, res, next) => {
+  let users;
+
+  try {
+    users = await User.find({}, '-password');
+  } catch (err) {
+    return next(new HttpError('Cannot get users at this time, please try again later', 500));
+  }
+
+  res.json({ users: users.map(user => user.toObject({ getters: true })) });
 };
 
 const signup = async (req, res, next) => {
@@ -29,19 +37,19 @@ const signup = async (req, res, next) => {
   let isEmailExists;
 
   try {
-    isEmailExists = await User.findOne({email: email});
+    isEmailExists = await User.findOne({ email: email });
   } catch (err) {
     return next(new HttpError('Cannot signin now, please try again later', 500));
   }
-  
+
   if (isEmailExists) {
     return next(new HttpError('Email already exists', 422));
   }
 
   const newUser = new User({
-    name, 
-    email, 
-    password, 
+    name,
+    email,
+    password,
     places,
     image: 'data:image/'
   });
@@ -61,7 +69,7 @@ const login = async (req, res, next) => {
   let user;
 
   try {
-    user = await User.findOne({email: email});
+    user = await User.findOne({ email: email });
   } catch (err) {
     return next(new HttpError('Cannot signin now, please try again later', 500));
   }
@@ -69,7 +77,7 @@ const login = async (req, res, next) => {
   if (!user || user.password !== password) {
     return next(new HttpError('Wrong email or password', 401));
   }
-  
+
   res.json({ message: "Logged in" });
 };
 
