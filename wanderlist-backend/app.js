@@ -28,7 +28,7 @@ app.use((error, req, res, next) => {
 
 mongoose
   .connect(
-    `mongodb+srv://asif:SFJ8HsSxdccmGPep@cluster0.ms3bx1d.mongodb.net/places?retryWrites=true&w=majority`
+    `mongodb://localhost:27017/wanderlist`
   )
   .then(() => {
     app.listen("5000");
