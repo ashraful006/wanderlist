@@ -2,6 +2,8 @@ const HttpError = require("../models/http-error");
 const uuid = require("uuid");
 const { validationResult } = require("express-validator");
 const Place = require("../models/place");
+const User = require("../models/user");
+const { default: mongoose } = require("mongoose");
 
 const getPlacesById = async (req, res, next) => {
   const id = req.params.pid;
@@ -57,6 +59,21 @@ const createPlace = async (req, res, next) => {
   }
 
   const { title, description, location, address, creator, image } = req.body;
+
+  let user;
+  
+  try {
+    user = await User.findById(creator);
+  } catch (err) {
+    const error = new HttpError('Creating place failed, please try again', 500);
+    return next(error);
+  }
+
+  if (!user) {
+    const error = new HttpError('Could not find user for provided id', 404);
+    return next(error);
+  }
+  
   const newPlace = new Place({
     title,
     description,
@@ -67,8 +84,15 @@ const createPlace = async (req, res, next) => {
   });
 
   try {
+
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
     await newPlace.save();
+    user.places.push(newPlace);
+    user.save();
+    sess.commitTransaction();
   } catch (err) {
+
     const error = new HttpError(
       "Cannot create places",
       500
