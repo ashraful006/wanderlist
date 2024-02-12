@@ -32,7 +32,7 @@ const signup = async (req, res, next) => {
     return next(new HttpError("Invalid information given", 422));
   }
 
-  const { name, email, password, places } = req.body;
+  const { name, email, password } = req.body;
 
   let isEmailExists;
 
@@ -50,7 +50,7 @@ const signup = async (req, res, next) => {
     name,
     email,
     password,
-    places,
+    places: [],
     image: 'data:image/'
   });
 

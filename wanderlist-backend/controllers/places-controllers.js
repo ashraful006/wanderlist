@@ -96,8 +96,8 @@ const updatePlace = async (req, res, next) => {
     place = await Place.findById(id);
   } catch (err) {
     const error = new HttpError(
-      "Cannot update place",
-      500
+      "Requested place not found",
+      404
     );
 
     return next(error);
