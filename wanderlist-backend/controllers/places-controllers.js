@@ -73,7 +73,7 @@ const createPlace = async (req, res, next) => {
     const error = new HttpError('Could not find user for provided id', 404);
     return next(error);
   }
-  
+
   const newPlace = new Place({
     title,
     description,
@@ -84,15 +84,14 @@ const createPlace = async (req, res, next) => {
   });
 
   try {
-
     const sess = await mongoose.startSession();
     sess.startTransaction();
-    await newPlace.save();
+    await newPlace.save({session: sess});
     user.places.push(newPlace);
-    user.save();
-    sess.commitTransaction();
+    await user.save({session: sess});
+    await sess.commitTransaction();
   } catch (err) {
-
+    console.log(err);
     const error = new HttpError(
       "Cannot create places",
       500
@@ -150,8 +149,10 @@ const deletePlace = async (req, res, next) => {
   let place; 
 
   try {
-    place = await Place.findOne({_id: id});
+    place = await Place.findById(id).populate("creator");
+    console.log(place);
   } catch (err) {
+    console.log(err);
     const error = new HttpError(
       "Cannot delete place",
       500
@@ -160,9 +161,19 @@ const deletePlace = async (req, res, next) => {
     return next(error);
   }
 
+  if (!place) {
+    return next(new HttpError('Cannot find given place', 404));
+  }
+  
   try {
-    await place.deleteOne();
+    const sess = await mongoose.startSession();
+    sess.startTransaction();
+    place.creator.places.pull(place);
+    await place.creator.save({ session: sess });
+    await place.deleteOne({ session: sess });
+    await sess.commitTransaction();
   } catch (err) {
+    console.log(err);
     const error = new HttpError(
       "Cannot delete the place",
       500
