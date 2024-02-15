@@ -60,10 +60,34 @@ const Auth = () => {
   };
   const submitHandler = async (event) => {
     event.preventDefault();
-    console.log(formState.inputs);
 
     if (isLogin) {
+      try {
+        const response = await fetch('http://localhost:5000/api/users/login',
+          {
+            method: "POST",
+            headers: {
+              "Content-type" : "application/json"
+            },
+            body: JSON.stringify({
+              email: formState.inputs.email.value,
+              password: formState.inputs.password.value
+            })
+          }
+        );
+  
+        const responseData = await response.json();
+        
+        if (!response.ok) {
+          throw new Error(responseData.message);
+        }
 
+        setIsLoading(false);
+        auth.logIn();
+      } catch (err) {
+        setIsLoading(false);
+        setError(err.message || 'Something went wrong, please try again.');
+      }
     } else {
       try {
         const response = await fetch('http://localhost:5000/api/users/signup',
@@ -86,7 +110,6 @@ const Auth = () => {
           throw new Error(responseData.message);
         }
 
-        console.log(responseData);
         setIsLoading(false);
         auth.logIn();
       } catch (err) {
