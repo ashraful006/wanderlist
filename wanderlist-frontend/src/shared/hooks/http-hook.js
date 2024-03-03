@@ -11,22 +11,21 @@ export const useHttpClient = () => {
     activeHttpRequest.current.push(httpAbortController);
 
     try {
-        const response = await fetch(url, {
-            method,
-            body,
-            headers,
-            signal: httpAbortController.signal
-        });
+      const response = await fetch(url, {
+          method,
+          body,
+          headers,
+          signal: httpAbortController.signal
+      });
+      const responseData = await response.json();
 
-				const responseData = await response.json();
+      activeHttpRequest.current = activeHttpRequest.current.filter(requests => requests !== httpAbortController);
+      if (!response.ok) {
+        throw new Error(responseData.message);
+      }
 
-        activeHttpRequest.current = activeHttpRequest.current.filter(requests => requests !== httpAbortController);
-        if (!response.ok) {
-          throw new Error(responseData.message);
-        }
-
-        setIsLoading(false);
-        return responseData;
+      setIsLoading(false);
+      return responseData;
     } catch (err) {
 			setError(err.message);
       setIsLoading(false);
