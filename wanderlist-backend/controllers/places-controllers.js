@@ -58,7 +58,7 @@ const createPlace = async (req, res, next) => {
     return next(new HttpError("Invalid inputs are passed.", 422));
   }
 
-  const { title, description, location, address, creator, image } = req.body;
+  const { title, description, location, creator, image } = req.body;
 
   let user;
   
@@ -78,7 +78,6 @@ const createPlace = async (req, res, next) => {
     title,
     description,
     location: location,
-    address,
     image,
     creator,
   });
@@ -91,7 +90,6 @@ const createPlace = async (req, res, next) => {
     await user.save({session: sess});
     await sess.commitTransaction();
   } catch (err) {
-    console.log(err);
     const error = new HttpError(
       "Cannot create places",
       500
@@ -150,9 +148,7 @@ const deletePlace = async (req, res, next) => {
 
   try {
     place = await Place.findById(id).populate("creator");
-    console.log(place);
   } catch (err) {
-    console.log(err);
     const error = new HttpError(
       "Cannot delete place",
       500
@@ -173,7 +169,6 @@ const deletePlace = async (req, res, next) => {
     await place.deleteOne({ session: sess });
     await sess.commitTransaction();
   } catch (err) {
-    console.log(err);
     const error = new HttpError(
       "Cannot delete the place",
       500

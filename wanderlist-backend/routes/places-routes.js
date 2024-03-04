@@ -13,7 +13,7 @@ router.post(
   [
     check("title").notEmpty(),
     check("description").isLength({ min: 5 }),
-    check("address").notEmpty(),
+    check("location").notEmpty(),
   ],
   placesControllers.createPlace
 );
