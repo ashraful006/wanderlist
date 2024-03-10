@@ -59,7 +59,7 @@ const UpdatePlace = (props) => {
 
     fetchData();
 
-  }, [setFormData, placeId, setFormData]);
+  }, [setFormData, placeId, sendRequest]);
 
   if (!place) {
     return (
