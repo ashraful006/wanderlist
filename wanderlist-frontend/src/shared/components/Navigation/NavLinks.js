@@ -6,6 +6,7 @@ import { AuthContext } from "../../context/auth-context";
 
 const NavLinks = (props) => {
   const auth = useContext(AuthContext);
+  console.log(auth);
 
   return (
     <ul className="nav-links">
@@ -14,7 +15,7 @@ const NavLinks = (props) => {
       </li>
       {auth.isLoggedin && (
         <li>
-          <NavLink to="/u1/places">MY PLACES</NavLink>
+          <NavLink to={`/${auth.userId}/places`} >MY PLACES</NavLink>
         </li>
       )}
       {auth.isLoggedin && (

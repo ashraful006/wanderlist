@@ -34,7 +34,7 @@ function App() {
     routes = (
       <Routes>
         <Route path="/" exact element={<Users />} />
-        <Route path="/:userId/place" exact element={<UserPlaces />} />
+        <Route path="/:userId/places" exact element={<UserPlaces />} />
         <Route path="/places/new" exact element={<NewPlace />} />
         <Route path="/places/:placeId" exact element={<UpdatePlace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -44,7 +44,7 @@ function App() {
     routes = (
       <Routes>
         <Route path="/" exact element={<Users />} />
-        <Route path="/:userId/place" exact element={<UserPlaces />} />
+        <Route path="/:userId/places" exact element={<UserPlaces />} />
         <Route path="/auth" exact element={<Auth />} />
         <Route path="*" element={<Navigate to="/auth" replace />} />
       </Routes>
