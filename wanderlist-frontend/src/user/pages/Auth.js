@@ -14,6 +14,7 @@ import Button from "../../shared/components/FormElements/Button";
 import { AuthContext } from "../../shared/context/auth-context";
 import { useHttpClient } from "../../shared/hooks/http-hook";
 import "./Auth.css";
+import ImageUpload from "../../shared/components/FormElements/ImageUpload";
 
 const Auth = () => {
   const auth = useContext(AuthContext);
@@ -41,6 +42,7 @@ const Auth = () => {
         {
           ...formState.inputs,
           name: undefined,
+          image: undefined
         },
         formState.inputs.email.isValid && formState.inputs.password.isValid
       );
@@ -52,6 +54,10 @@ const Auth = () => {
             value: "",
             isValid: false,
           },
+          image: {
+            value: null,
+            isValid: false
+          }
         },
         false
       );
@@ -120,7 +126,10 @@ const Auth = () => {
               validators={[VALIDATOR_REQUIRE()]}
               errorText="Name is required"
               onInput={inputHandler}
-            ></Input>
+            />
+          )}
+          {!isLogin && (
+            <ImageUpload center id="image" onInput={inputHandler}/>
           )}
           <Input
             element="input"
