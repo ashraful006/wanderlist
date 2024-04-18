@@ -3,6 +3,7 @@ const uuid = require("uuid");
 const { validationResult } = require("express-validator");
 const Place = require("../models/place");
 const User = require("../models/user");
+const fs = require('fs');
 const { default: mongoose } = require("mongoose");
 
 const getPlacesById = async (req, res, next) => {
@@ -176,6 +177,10 @@ const deletePlace = async (req, res, next) => {
     return next(error);
   }
 
+  fs.unlink(place.image, err => {
+    console.log(err);
+  });
+  
   res.status(200).json({ message: "A place has beed deleted." });
 };
 
