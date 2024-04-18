@@ -1,5 +1,6 @@
 const uuid = require("uuid");
 const { validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
 
 const HttpError = require("../models/http-error");
 const User = require('../models/user');
@@ -26,9 +27,9 @@ const getUsers = async (req, res, next) => {
 };
 
 const signup = async (req, res, next) => {
-  const error = validationResult(req);
+  const errors = validationResult(req);
 
-  if (!error.isEmpty()) {
+  if (!errors.isEmpty()) {
     return next(new HttpError("Invalid information given", 422));
   }
 
@@ -46,10 +47,19 @@ const signup = async (req, res, next) => {
     return next(new HttpError('Email already exists', 422));
   }
 
+  let hashedPassword;
+  
+  try {
+    hashedPassword = await bcrypt.hash(password, 12);
+  } catch (err) {
+    const error = new HttpError("Signup failed please try again later", 500);
+    return next(error);
+  }
+
   const newUser = new User({
     name,
     email,
-    password,
+    password: hashedPassword,
     places: [],
     image: req.file.path
   });
@@ -74,10 +84,23 @@ const login = async (req, res, next) => {
     return next(new HttpError('Cannot signin now, please try again later', 500));
   }
 
-  if (!user || user.password !== password) {
+  if (!user) {
     return next(new HttpError('Wrong email or password', 401));
   }
 
+  let isValidPassword = false;
+
+  try {
+    isValidPassword = await bcrypt.compare(password, user.password);
+  } catch (err) {
+    const error = new HttpError("Cannot sign you in, please check your credentials and try again.", 500);
+    return next(error);    
+  }
+
+  if (!isValidPassword) {
+    return next(new HttpError('Wrong email or password', 401));
+  }
+  
   res.json({ 
     message: "Logged in",
     user: user.toObject({ getters: true })
