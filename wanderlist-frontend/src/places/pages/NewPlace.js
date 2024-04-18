@@ -12,6 +12,7 @@ import { useHttpClient } from "../../shared/hooks/http-hook";
 import { AuthContext } from "../../shared/context/auth-context";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import ImageUpload from "../../shared/components/FormElements/ImageUpload";
 
 const NewPlace = () => {
   const auth = useContext(AuthContext);
@@ -33,6 +34,10 @@ const NewPlace = () => {
         value: "",
         isValid: false,
       },
+      image: {
+        value: undefined,
+        isValid: false,
+      }
     },
     false
   );
@@ -42,24 +47,22 @@ const NewPlace = () => {
     event.preventDefault();
     
     try {
+      const formData = new FormData();
+
+      formData.append("title", formState.inputs.title.value);
+      formData.append("description", formState.inputs.description.value);
+      formData.append("creator", auth.userId);
+      formData.append("location", 
+        JSON.stringify({
+          lat: formState.inputs.lat.value,
+          lng: formState.inputs.lng.value
+        })
+      );
+      formData.append('image', formState.inputs.image.value);
       await sendRequest(
         'http://localhost:5000/api/places',
         'POST',
-        JSON.stringify(
-          {
-            title: formState.inputs.title.value,
-            description: formState.inputs.description.value,
-            location: {
-              lat: formState.inputs.lat.value,
-              lng: formState.inputs.lng.value,
-            },
-            creator: auth.userId,
-            image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwhqZsr5q4Dz-ecvcVg_9WzU0VsmEw6l6pYYaq9RdWKw&s"
-          }
-        ),
-        {
-          "Content-Type": "application/json"
-        }
+        formData
       );
     } catch (err) {}
   };
@@ -102,6 +105,7 @@ const NewPlace = () => {
           errorText="Please enter a valid longitude"
           onInput={inputHandler}
         />
+        <ImageUpload center id="image" onInput={inputHandler}/>
         <Button type="submit" disabled={!formState.isValid}>
           Add place
         </Button>

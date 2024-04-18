@@ -57,11 +57,10 @@ const createPlace = async (req, res, next) => {
   if (!errors.isEmpty()) {
     return next(new HttpError("Invalid inputs are passed.", 422));
   }
-
-  const { title, description, location, creator, image } = req.body;
+  const { title, description, location, creator } = req.body;
 
   let user;
-  
+
   try {
     user = await User.findById(creator);
   } catch (err) {
@@ -77,8 +76,8 @@ const createPlace = async (req, res, next) => {
   const newPlace = new Place({
     title,
     description,
-    location: location,
-    image,
+    location: JSON.parse(location),
+    image: req.file.path,
     creator,
   });
 
