@@ -3,13 +3,15 @@ const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
   try {
-    const token = req.headers.authorization.split(" ")[1];
+    if (req.method === "OPTIONS") {
+      return next();
+    }
 
+    const token = req.headers.authorization.split(" ")[1];
     if (!token) {
       throw new Error("Authorization failed.");
     }
-
-    const decodedData = jwt.verify(token, "topsecret");
+    const decodedData = jwt.verify(token, "topSecret");
     req.userData = { userId: decodedData.userId };
     next();
   } catch (error) {
